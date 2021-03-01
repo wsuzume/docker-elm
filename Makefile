@@ -4,8 +4,18 @@ SOURCE=Dockerfile
 IMAGE=${USERNAME}/ubuntu-elm:latest
 
 # build container
+.PHONY: build
 build: Dockerfile
 	docker image build -f ${SOURCE} -t ${IMAGE} .
+
+.PHONY: push
+push:
+	docker push ${IMAGE}
+
+.PHONY: pull
+pull:
+	docker pull ${IMAGE}
+
 
 # create new container and login to the shell
 shell:

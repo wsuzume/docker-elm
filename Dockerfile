@@ -4,14 +4,6 @@ RUN apt-get update \
     && apt-get install -y curl \
     && apt-get clean
 
-# Install latest npm
-#RUN npm install -g n
-#RUN n stable
-#RUN apt-get purge -y nodejs npm
-
-# Install parcel
-#RUN npm install -g parcel-bundler
-
 # Install elm-live
 RUN npm install -g elm-live
 
