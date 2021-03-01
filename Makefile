@@ -16,19 +16,25 @@ push:
 pull:
 	docker pull ${IMAGE}
 
-
-# create new container and login to the shell
-shell:
-	docker container run -it --rm -p 8000:8000 -v ${PWD}/src:/work/src -v ${PWD}/bin:/work/bin ${IMAGE} bash
-
 # clean up all stopped containers
+.PHONY: clean
 clean:
 	docker container prune
 
 # delete all image
+.PHONY: doomsday
 doomsday:
-	docker image rm `docker image ls -q`
+	docker image rm -f `docker image ls -q`
 
+
+# create new container and login to the shell
+.PHONY: shell
+shell:
+	docker container run -it --rm -p 8000:8000 \
+		-v ${PWD}/src:/work/src \
+		-v ${PWD}/bin:/work/bin \
+		${IMAGE} \
+		bash
 
 elm: src/Main.elm
 	docker container run --rm \
@@ -38,10 +44,10 @@ elm: src/Main.elm
 		elm make src/Main.elm --output=bin/main.js
 	cp src/index.html bin/index.html
 
+.PHONY: serve
 # --init をつけないと Ctrl+C が利かない
 serve:
-	cp src/index.html bin/index.html
-	docker container run -it --init --rm -p 8080:8000 \
+	docker container run -it --init --rm -p 8000:8000 \
 		-v ${PWD}/src:/work/src \
 		-v ${PWD}/bin:/work/bin \
 		-w /work/src \
