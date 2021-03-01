@@ -1,8 +1,7 @@
-APPNAME=ignite
+USERNAME=wsuzume
 
 SOURCE=Dockerfile
-IMAGE=${APPNAME}/frontdev:latest
-CONTAINER=front-dev
+IMAGE=${USERNAME}/ubuntu-elm:latest
 
 # build container
 build: Dockerfile
@@ -10,7 +9,7 @@ build: Dockerfile
 
 # create new container and login to the shell
 shell:
-	docker container run -it --rm -p 8080:8000 -v ${PWD}/src:/work/src -v ${PWD}/bin:/work/bin ${IMAGE}
+	docker container run -it --rm -p 8000:8000 -v ${PWD}/src:/work/src -v ${PWD}/bin:/work/bin ${IMAGE} bash
 
 # clean up all stopped containers
 clean:
@@ -22,10 +21,19 @@ doomsday:
 
 
 elm: src/Main.elm
-	docker container run --rm -v ${PWD}/src:/work/src -v ${PWD}/bin:/work/bin ${IMAGE} elm make src/Main.elm --output=bin/main.js
+	docker container run --rm \
+		-v ${PWD}/src:/work/src \
+		-v ${PWD}/bin:/work/bin \
+		${IMAGE} \
+		elm make src/Main.elm --output=bin/main.js
 	cp src/index.html bin/index.html
 
 # --init をつけないと Ctrl+C が利かない
 serve:
 	cp src/index.html bin/index.html
-	docker container run -it --init --rm -p 8080:8000 -v ${PWD}/src:/work/src -v ${PWD}/bin:/work/bin -w /work/src ${IMAGE} elm-live Main.elm --pushstate --host=0.0.0.0 -- --output=main.js
+	docker container run -it --init --rm -p 8080:8000 \
+		-v ${PWD}/src:/work/src \
+		-v ${PWD}/bin:/work/bin \
+		-w /work/src \
+		${IMAGE} \
+		elm-live Main.elm --pushstate --host=0.0.0.0 -- --output=main.js
